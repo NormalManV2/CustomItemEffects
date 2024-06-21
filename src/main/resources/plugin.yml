@@ -1,0 +1,4 @@
+name: CustomItemEffects
+version: '${project.version}'
+main: nuclearkat.customitemeffects.CustomItemEffects
+api-version: '1.21'
