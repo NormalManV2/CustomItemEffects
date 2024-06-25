@@ -3,7 +3,6 @@ package nuclearkat.customitemeffects.items;
 import nuclearkat.customitemeffects.CustomItemEffects;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -11,10 +10,11 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
-public abstract class ItemStackCreation {
+public abstract class ItemBuilder {
 
-    private final CustomItemEffects customItemEffects = CustomItemEffects.getPlugin(CustomItemEffects.class);
+    private final CustomItemEffects customItemEffects;
     private final String displayName;
     private final Material materialType;
     private final List<String> lore;
@@ -29,7 +29,8 @@ public abstract class ItemStackCreation {
      * @param cooldown The cooldown in seconds of which the item's abilities will be delayed.
      * @param lore The lore of the item.
      */
-    public ItemStackCreation(String displayName, Material materialType, int cooldown, String... lore){
+    public ItemBuilder(CustomItemEffects customItemEffects, String displayName, Material materialType, int cooldown, String... lore){
+        this.customItemEffects = customItemEffects;
         this.displayName = ChatColor.translateAlternateColorCodes('&', displayName);
         this.materialType = materialType;
         this.lore = Arrays.asList(lore);
@@ -64,9 +65,12 @@ public abstract class ItemStackCreation {
      */
     protected void addCustomData(ItemStack itemStack){
         ItemMeta itemMeta = itemStack.getItemMeta();
-        if (itemMeta == null) return;
+        if (itemMeta == null) {
+            System.out.println("Item meta is null when creating item!");
+            return;
+        }
         PersistentDataContainer container = itemMeta.getPersistentDataContainer();
-        container.set(new NamespacedKey(customItemEffects, "custom_item"), PersistentDataType.STRING, displayName);
+        container.set(customItemEffects.getRegisteredKey("CustomItem"), PersistentDataType.STRING, displayName);
         itemStack.setItemMeta(itemMeta);
     }
 
@@ -80,12 +84,10 @@ public abstract class ItemStackCreation {
         ItemMeta itemMeta = itemStack.getItemMeta();
         itemMeta.setDisplayName(displayName);
 
-        List<String> itemLore = new ArrayList<>();
+        List<String> itemLore = lore.stream()
+                .map(l -> ChatColor.translateAlternateColorCodes('&', l))
+                .collect(Collectors.toList());
 
-        for (String string : lore){
-            String foundLore = ChatColor.translateAlternateColorCodes('&', string);
-            itemLore.add(foundLore);
-        }
         itemMeta.setLore(itemLore);
         itemStack.setItemMeta(itemMeta);
         addCustomData(itemStack);
@@ -93,23 +95,7 @@ public abstract class ItemStackCreation {
         return itemStack;
     }
 
-    public int getCooldown(){
-        return cooldown;
-    }
-
-    public ItemStack getCreatedItemStack(){
+    public ItemStack getItemStack(){
         return createdItem;
-    }
-
-    public List<String> getLore() {
-        return lore;
-    }
-
-    public Material getMaterialType() {
-        return materialType;
-    }
-
-    public String getDisplayName() {
-        return displayName;
     }
 }
