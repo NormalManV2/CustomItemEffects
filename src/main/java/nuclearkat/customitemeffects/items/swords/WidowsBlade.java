@@ -10,11 +10,10 @@ import org.bukkit.potion.PotionEffectType;
 
 public class WidowsBlade extends ItemBuilder {
 
-    private final CustomItemEffects customItemEffects;
+    private final CustomItemEffects customItemEffects = CustomItemEffects.getPlugin(CustomItemEffects.class);
 
-    public WidowsBlade(CustomItemEffects customItemEffects, String displayName, Material materialType, String... lore) {
-        super(customItemEffects, displayName, materialType, 5,  lore);
-        this.customItemEffects = customItemEffects;
+    public WidowsBlade(String displayName, Material materialType, String... lore) {
+        super(displayName, materialType, 5,  lore);
     }
 
     @Override

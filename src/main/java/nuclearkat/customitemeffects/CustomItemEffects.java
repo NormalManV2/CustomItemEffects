@@ -3,13 +3,16 @@ package nuclearkat.customitemeffects;
 import nuclearkat.customitemeffects.command.AdminMenuCommand;
 import nuclearkat.customitemeffects.inventory.InventoryManager;
 import nuclearkat.customitemeffects.items.ItemBuilder;
+import nuclearkat.customitemeffects.items.registry.ItemRegistry;
 import nuclearkat.customitemeffects.items.swords.BlindingSword;
+import nuclearkat.customitemeffects.items.staffs.FireballWand;
+import nuclearkat.customitemeffects.items.staffs.HealingStaff;
 import nuclearkat.customitemeffects.items.swords.WidowsBlade;
-import nuclearkat.customitemeffects.listeners.AdminMenuListener;
+import nuclearkat.customitemeffects.listeners.ItemsMenuListener;
 import nuclearkat.customitemeffects.listeners.CustomItemListener;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.*;
@@ -18,21 +21,28 @@ public final class CustomItemEffects extends JavaPlugin {
 
     private final Map<String, NamespacedKey> cachedKeys = new HashMap<>();
     private final List<ItemBuilder> itemBuilderList = new ArrayList<>();
-    private final Map<String, ItemStack> customItemMap = new HashMap<>();
-    private final InventoryManager inventoryManager = new InventoryManager(this);
+    private final Map<String, Inventory> customInventoryMap = new HashMap<>();
+    private final InventoryManager inventoryManager;
 
     {
         registerNamespacedKey("CustomItem", new NamespacedKey(this, "custom_item"));
 
-        BlindingSword blindingSword = new BlindingSword(this, "&4Blinding&cSword", Material.DIAMOND_SWORD, "&7Blinds enemies on use, 3 second cooldown");
-        WidowsBlade widowsBlade = new WidowsBlade(this, "&4Widows&0Blade", Material.DIAMOND_SWORD, "&7Poisons enemies on use, 5 second cooldown");
+        BlindingSword blindingSword = new BlindingSword("&4Blinding&cSword", Material.DIAMOND_SWORD, "&7Blinds enemies on use, 3 second cooldown");
+        WidowsBlade widowsBlade = new WidowsBlade("&4Widows&0Blade", Material.DIAMOND_SWORD, "&7Poisons enemies on use, 5 second cooldown");
+        FireballWand fireballWand = new FireballWand("&4Fireball&cWand", Material.STICK, "&7Throws fireballs at enemies on use, 5 second cooldown");
+        HealingStaff healingStaff = new HealingStaff("&6Healing&eStaff", Material.STICK, "&7Heals you for 2 hearts on use, 7 second cooldown");
 
         itemBuilderList.add(blindingSword);
         itemBuilderList.add(widowsBlade);
+        itemBuilderList.add(fireballWand);
+        itemBuilderList.add(healingStaff);
 
-        customItemMap.put("BlindingSword", blindingSword.getItemStack());
-        customItemMap.put("WidowsBlade", widowsBlade.getItemStack());
+        ItemRegistry.getInstance().register("BlindingSword", blindingSword.getItemStack());
+        ItemRegistry.getInstance().register("WidowsBlade", widowsBlade.getItemStack());
+        ItemRegistry.getInstance().register("FireballWand", fireballWand.getItemStack());
+        ItemRegistry.getInstance().register("HealingStaff", healingStaff.getItemStack());
 
+        this.inventoryManager = new InventoryManager();
     }
 
 
@@ -49,7 +59,7 @@ public final class CustomItemEffects extends JavaPlugin {
 
     private void registerListeners() {
         getServer().getPluginManager().registerEvents(new CustomItemListener(this), this);
-        getServer().getPluginManager().registerEvents(new AdminMenuListener(this), this);
+        getServer().getPluginManager().registerEvents(new ItemsMenuListener(), this);
     }
 
     private void registerCommands() {
@@ -65,10 +75,14 @@ public final class CustomItemEffects extends JavaPlugin {
     }
 
     public List<ItemBuilder> getItemBuilderList() {
-        return itemBuilderList;
+        return Collections.unmodifiableList(itemBuilderList);
     }
 
-    public ItemStack getCustomItem(String itemKey) {
-        return customItemMap.get(itemKey);
+    public Inventory getCustomInventory(String name) {
+        if (!customInventoryMap.containsKey(name)) {
+            return null;
+        }
+        return customInventoryMap.get(name);
     }
+
 }

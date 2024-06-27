@@ -1,31 +1,29 @@
 package nuclearkat.customitemeffects.inventory;
 
-import nuclearkat.customitemeffects.CustomItemEffects;
-import org.bukkit.Bukkit;
+import nuclearkat.customitemeffects.items.registry.InventoryRegistry;
+import nuclearkat.customitemeffects.items.registry.ItemRegistry;
 import org.bukkit.ChatColor;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 
 public class InventoryManager {
 
-    private final CustomItemEffects customItemEffects;
-
-    public InventoryManager(CustomItemEffects customItemEffects) {
-        this.customItemEffects = customItemEffects;
+    public InventoryManager() {
+        this.registerInventories();
     }
 
-    private Inventory adminMenu(){
-        Inventory adminMenu = Bukkit.createInventory(null, 27, ChatColor.translateAlternateColorCodes('&', "&cAdminMenu"));
+    private Inventory itemsMenu(){
+        InventoryBuilder itemsMenu = new InventoryBuilder(null, 27, ChatColor.translateAlternateColorCodes('&', "&cItemsMenu"));
 
-        ItemStack blindingSword = customItemEffects.getCustomItem("BlindingSword");
-        ItemStack widowsBlade = customItemEffects.getCustomItem("WidowsBlade");
+        itemsMenu.setItem(ItemRegistry.getInstance().get("BlindingSword"), 12);
+        itemsMenu.setItem(ItemRegistry.getInstance().get("WidowsBlade"), 13);
+        itemsMenu.setItem(ItemRegistry.getInstance().get("FireballWand"), 14);
+        itemsMenu.setItem(ItemRegistry.getInstance().get("HealingStaff"), 15);
 
-        adminMenu.setItem(12, blindingSword);
-        adminMenu.setItem(13, widowsBlade);
-
-        return adminMenu;
+        return itemsMenu.build();
     }
 
-    public Inventory getAdminMenu(){return adminMenu();}
+    private void registerInventories(){
+        InventoryRegistry.getInstance().register("ItemsMenu", itemsMenu());
+    }
 
 }

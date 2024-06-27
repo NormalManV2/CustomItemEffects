@@ -10,11 +10,10 @@ import org.bukkit.potion.PotionEffectType;
 
 public class BlindingSword extends ItemBuilder {
 
-    private final CustomItemEffects customItemEffects;
+    private final CustomItemEffects customItemEffects = CustomItemEffects.getPlugin(CustomItemEffects.class);
 
-    public BlindingSword(CustomItemEffects customItemEffects, String displayName, Material materialType,  String... lore){
-        super(customItemEffects, displayName, materialType, 3,  lore);
-        this.customItemEffects = customItemEffects;
+    public BlindingSword(String displayName, Material materialType,  String... lore){
+        super(displayName, materialType, 3,  lore);
     }
 
     @Override

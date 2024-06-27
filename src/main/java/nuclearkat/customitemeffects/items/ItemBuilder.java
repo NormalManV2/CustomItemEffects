@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 public abstract class ItemBuilder {
 
-    private final CustomItemEffects customItemEffects;
+    private final CustomItemEffects customItemEffects = CustomItemEffects.getPlugin(CustomItemEffects.class);
     private final String displayName;
     private final Material materialType;
     private final List<String> lore;
@@ -29,8 +29,7 @@ public abstract class ItemBuilder {
      * @param cooldown The cooldown in seconds of which the item's abilities will be delayed.
      * @param lore The lore of the item.
      */
-    public ItemBuilder(CustomItemEffects customItemEffects, String displayName, Material materialType, int cooldown, String... lore){
-        this.customItemEffects = customItemEffects;
+    public ItemBuilder(String displayName, Material materialType, int cooldown, String... lore){
         this.displayName = ChatColor.translateAlternateColorCodes('&', displayName);
         this.materialType = materialType;
         this.lore = Arrays.asList(lore);
